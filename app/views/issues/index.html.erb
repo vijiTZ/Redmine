@@ -1,95 +1,152 @@
-<div class="contextual">
-  <% if User.current.allowed_to?(:add_issues, @project, :global => true) && (@project.nil? || Issue.allowed_target_trackers(@project).any?) %>
-    <%= link_to sprite_icon('add', l(:label_issue_new)), _new_project_issue_path(@project), :class => 'icon icon-add new-issue' %>
-  <% end %>
-  <%= actions_dropdown do %>
-    <% if @project %>
-      <%= link_to sprite_icon('summary', l(:field_summary)), project_issues_report_path(@project), :class => 'icon icon-stats' %>
+<%# Issues index — modern SaaS dashboard shell matching Projects / Activity / Spent Time.
+    All existing Redmine ERB logic, filters, pagination, hooks kept intact. %>
+
+<div class="tz-pi-page">
+
+  <%# ── Page title ── %>
+  <div class="tz-pi-header">
+    <h1 class="tz-pi-title"><%= @query.new_record? ? l(:label_issue_plural) : @query.name %></h1>
+    <% if @query.persisted? && @query.description.present? %>
+      <p class="tz-dash-subtitle"><%= @query.description %></p>
     <% end %>
+  </div>
 
-    <% if User.current.allowed_to?(:import_issues, @project, :global => true) && User.current.allowed_to?(:add_issues, @project, :global => true) %>
-      <%= link_to sprite_icon('import', l(:button_import)), new_issues_import_path(:project_id => @project), :class => 'icon icon-import' %>
-    <% end %>
+  <%# ── Topbar: shared tab strip (left) + action buttons (right) ── %>
+  <div class="tz-pi-topbar">
+    <%= render 'shared/project_tabs', active: 'issues' %>
 
-    <%= link_to_if_authorized sprite_icon('settings', l(:label_settings)),
-                              {:controller => 'projects', :action => 'settings', :id => @project, :tab => 'issues'},
-                              :class => 'icon icon-settings' if User.current.allowed_to?(:edit_project, @project) %>
-  <% end %>
-</div>
-
-<h2><%= @query.new_record? ? l(:label_issue_plural) : @query.name %></h2>
-<% html_title(@query.new_record? ? l(:label_issue_plural) : @query.name) %>
-<%= @query.persisted? && @query.description.present? ? content_tag('p', @query.description, class: 'subtitle') : '' %>
-
-<%= form_tag(_project_issues_path(@project), :method => :get, :id => 'query_form') do %>
-  <%= render :partial => 'queries/query_form' %>
-<% end %>
-
-<% if @query.valid? %>
-<% if @issues.empty? %>
-<p class="nodata"><%= l(:label_no_data) %></p>
-<% else %>
-<%= render_query_totals(@query) %>
-<%= render :partial => 'issues/list', :locals => {:issues => @issues, :query => @query} %>
-<span class="pagination"><%= pagination_links_full @issue_pages, @issue_count %></span>
-<% end %>
-
-<% other_formats_links do |f| %>
-  <%= f.link_to_with_query_parameters 'CSV', {}, :onclick => "showModal('csv-export-options', '350px'); return false;" %>
-  <%= f.link_to_with_query_parameters 'PDF' %>
-  <%= f.link_to_with_query_parameters 'Atom', :key => User.current.atom_key %>
-<% end %>
-
-<div id="csv-export-options" style="display:none;">
-  <h3 class="title"><%= l(:label_export_options, :export_format => 'CSV') %></h3>
-  <%= form_tag(_project_issues_path(@project, :format => 'csv'), :method => :get, :id => 'csv-export-form') do %>
-  <%= query_as_hidden_field_tags(@query) %>
-  <%= hidden_field_tag('query_name', @query.name) %>
-  <p>
-    <label><%= radio_button_tag 'c[]', '', true %> <%= l(:description_selected_columns) %></label><br />
-    <label><%= radio_button_tag 'c[]', 'all_inline' %> <%= l(:description_all_columns) %></label>
-  </p>
-  <% if @query.available_block_columns.any? %>
-    <fieldset id="csv-export-block-columns">
-      <legend>
-        <%= toggle_checkboxes_link('#csv-export-block-columns input[type=checkbox]') %>
-      </legend>
-      <% @query.available_block_columns.each do |column| %>
-        <label><%= check_box_tag 'c[]', column.name, @query.has_column?(column), :id => nil %> <%= column.caption %></label>
+    <div class="tz-pi-actions">
+      <% if User.current.allowed_to?(:add_issues, @project, global: true) &&
+            (@project.nil? || Issue.allowed_target_trackers(@project).any?) %>
+        <%= link_to _new_project_issue_path(@project), class: 'tz-pi-btn tz-pi-btn--primary' do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none"
+               viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          <%= l(:label_issue_new) %>
+        <% end %>
       <% end %>
-    </fieldset>
-  <% end %>
-  <%= export_csv_encoding_select_tag %>
-  <%= export_csv_separator_select_tag %>
-  <% if @issue_count > Setting.issues_export_limit.to_i %>
-  <p class="icon icon-warning">
-    <%= sprite_icon('warning', l(:setting_issues_export_limit)) %>: <%= Setting.issues_export_limit.to_i %>
-  </p>
-  <% end %>
-  <p class="buttons">
-    <%= submit_tag l(:button_export), :name => nil, :onclick => "hideModal(this);", :data => { :disable_with => false } %>
-    <%= link_to_function l(:button_cancel), "hideModal(this);" %>
-  </p>
-  <% end %>
-</div>
 
-<% end %>
-<%= call_hook(:view_issues_index_bottom, { :issues => @issues, :project => @project, :query => @query }) %>
+      <%= actions_dropdown do %>
+        <% if @project %>
+          <%= link_to sprite_icon('summary', l(:field_summary)),
+                project_issues_report_path(@project), class: 'icon icon-stats' %>
+        <% end %>
+        <% if User.current.allowed_to?(:import_issues, @project, global: true) &&
+              User.current.allowed_to?(:add_issues, @project, global: true) %>
+          <%= link_to sprite_icon('import', l(:button_import)),
+                new_issues_import_path(project_id: @project), class: 'icon icon-import' %>
+        <% end %>
+        <%= link_to_if_authorized sprite_icon('settings', l(:label_settings)),
+              { controller: 'projects', action: 'settings', id: @project, tab: 'issues' },
+              class: 'icon icon-settings' if User.current.allowed_to?(:edit_project, @project) %>
+      <% end %>
+
+      <button type="button" class="tz-pi-btn tz-pi-btn--secondary" id="tz-issues-filter-toggle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/>
+        </svg>
+        <%= l(:label_filter_plural) %>
+      </button>
+    </div>
+  </div>
+
+  <%# ── Filter form (collapsible) ── %>
+  <div class="tz-pi-filter-bar" id="tz-issues-filter-bar">
+    <%= form_tag(_project_issues_path(@project), method: :get, id: 'query_form') do %>
+      <%= render partial: 'queries/query_form' %>
+    <% end %>
+  </div>
+
+  <%# ── Issues content ── %>
+  <div class="tz-dash-content">
+    <% if @query.valid? %>
+      <% if @issues.empty? %>
+        <div class="tz-pi-empty">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none"
+               viewBox="0 0 24 24" stroke="#9ca3af" stroke-width="1.4">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 8v4m0 4h.01"/>
+          </svg>
+          <p><%= l(:label_no_data) %></p>
+        </div>
+      <% else %>
+        <%= render_query_totals(@query) %>
+        <%= render partial: 'issues/list', locals: { issues: @issues, query: @query } %>
+        <span class="pagination"><%= pagination_links_full @issue_pages, @issue_count %></span>
+      <% end %>
+
+      <% other_formats_links do |f| %>
+        <%= f.link_to_with_query_parameters 'CSV', {},
+              onclick: "showModal('csv-export-options', '350px'); return false;" %>
+        <%= f.link_to_with_query_parameters 'PDF' %>
+        <%= f.link_to_with_query_parameters 'Atom', key: User.current.atom_key %>
+      <% end %>
+
+      <div id="csv-export-options" style="display:none;">
+        <h3 class="title"><%= l(:label_export_options, export_format: 'CSV') %></h3>
+        <%= form_tag(_project_issues_path(@project, format: 'csv'), method: :get, id: 'csv-export-form') do %>
+          <%= query_as_hidden_field_tags(@query) %>
+          <%= hidden_field_tag('query_name', @query.name) %>
+          <p>
+            <label><%= radio_button_tag 'c[]', '', true %> <%= l(:description_selected_columns) %></label><br />
+            <label><%= radio_button_tag 'c[]', 'all_inline' %> <%= l(:description_all_columns) %></label>
+          </p>
+          <% if @query.available_block_columns.any? %>
+            <fieldset id="csv-export-block-columns">
+              <legend><%= toggle_checkboxes_link('#csv-export-block-columns input[type=checkbox]') %></legend>
+              <% @query.available_block_columns.each do |column| %>
+                <label><%= check_box_tag 'c[]', column.name, @query.has_column?(column), id: nil %> <%= column.caption %></label>
+              <% end %>
+            </fieldset>
+          <% end %>
+          <%= export_csv_encoding_select_tag %>
+          <%= export_csv_separator_select_tag %>
+          <% if @issue_count > Setting.issues_export_limit.to_i %>
+            <p class="icon icon-warning">
+              <%= sprite_icon('warning', l(:setting_issues_export_limit)) %>: <%= Setting.issues_export_limit.to_i %>
+            </p>
+          <% end %>
+          <p class="buttons">
+            <%= submit_tag l(:button_export), name: nil,
+                  onclick: "hideModal(this);", data: { disable_with: false } %>
+            <%= link_to_function l(:button_cancel), "hideModal(this);" %>
+          </p>
+        <% end %>
+      </div>
+    <% end %>
+  </div><%# /tz-dash-content %>
+
+  <%= call_hook(:view_issues_index_bottom, { issues: @issues, project: @project, query: @query }) %>
+
+</div><%# /tz-pi-page %>
+
+<%# ── Filter toggle JS ── %>
+<script>
+(function () {
+  var btn = document.getElementById('tz-issues-filter-toggle');
+  var bar = document.getElementById('tz-issues-filter-bar');
+  if (!btn || !bar) return;
+  btn.addEventListener('click', function () {
+    bar.classList.toggle('tz-pi-filter-bar--open');
+  });
+})();
+</script>
 
 <% content_for :sidebar do %>
-    <%= render :partial => 'issues/sidebar' %>
+  <%= render partial: 'issues/sidebar' %>
 <% end %>
 
 <% content_for :header_tags do %>
-    <%= auto_discovery_link_tag(:atom,
-                                {:query_id => @query, :format => 'atom',
-                                 :page => nil, :key => User.current.atom_key},
-                                :title => l(:label_issue_plural)) %>
-    <%= auto_discovery_link_tag(:atom,
-                                {:controller => 'journals', :action => 'index',
-                                 :query_id => @query, :format => 'atom',
-                                 :page => nil, :key => User.current.atom_key},
-                                :title => l(:label_changes_details)) %>
+  <%= auto_discovery_link_tag(:atom,
+        { query_id: @query, format: 'atom', page: nil, key: User.current.atom_key },
+        title: l(:label_issue_plural)) %>
+  <%= auto_discovery_link_tag(:atom,
+        { controller: 'journals', action: 'index', query_id: @query,
+          format: 'atom', page: nil, key: User.current.atom_key },
+        title: l(:label_changes_details)) %>
 <% end %>
 
+<% html_title(@query.new_record? ? l(:label_issue_plural) : @query.name) %>
 <%= context_menu %>

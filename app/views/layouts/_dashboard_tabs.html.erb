@@ -1,0 +1,21 @@
+<%#
+  Shared dashboard tab strip.
+  Renders the Projects / Activity / Issues / Spent Time pill tabs.
+  Active state is detected from controller_name / action_name.
+  Include this partial at the top of each dashboard page content area.
+%>
+<div class="tz-dash-tabs">
+  <%= link_to l(:label_project_plural), projects_path,
+        class: "tz-dash-tab #{controller_name == 'projects' ? 'tz-dash-tab--active' : ''}" %>
+
+  <%= link_to l(:label_activity), activity_path,
+        class: "tz-dash-tab #{controller_name == 'activities' ? 'tz-dash-tab--active' : ''}" %>
+
+  <% if User.current.logged? %>
+    <%= link_to l(:label_issue_plural), issues_path,
+          class: "tz-dash-tab #{controller_name == 'issues' && @project.nil? ? 'tz-dash-tab--active' : ''}" %>
+
+    <%= link_to l(:label_spent_time), time_entries_path,
+          class: "tz-dash-tab #{controller_name == 'timelog' && @project.nil? ? 'tz-dash-tab--active' : ''}" %>
+  <% end %>
+</div>

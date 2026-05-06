@@ -15,133 +15,313 @@
 <%= heads_for_i18n %>
 <%= heads_for_auto_complete(@project) %>
 <%= call_hook :view_layouts_base_html_head %>
-<!-- page specific tags -->
 <%= yield :header_tags -%>
 </head>
 <body class="<%= body_css_classes %>" data-text-formatting="<%= Setting.text_formatting %>">
 <%= call_hook :view_layouts_base_body_top %>
 <div id="wrapper">
 
+<%# ── Mobile flyout menu — kept 100% intact for Redmine JS ── %>
 <div class="flyout-menu js-flyout-menu">
-
-    <% if User.current.logged? || !Setting.login_required? %>
-        <div class="flyout-menu__search">
-            <%= form_tag(search_path(id: @project), :method => :get ) do %>
-            <%= hidden_field_tag(controller.default_search_scope, 1, :id => nil) if controller.default_search_scope %>
-            <%= label_tag 'flyout-search', sprite_icon('search', l(:label_search), icon_only: true), :class => 'search-magnifier search-magnifier--flyout' %>
-            <%= text_field_tag 'q', @question, :id => 'flyout-search', :class => 'small js-search-input', :placeholder => l(:label_search) %>
-            <% end %>
-        </div>
-    <% end %>
-
-    <% if User.current.logged? %>
-        <div class="flyout-menu__avatar">
-          <%= link_to(avatar(User.current, :size => "40"), user_path(User.current)) %>
-          <%= link_to_user(User.current, :format => :username) %>
-        </div>
-    <% end %>
-
-    <% if display_main_menu?(@project) %>
-        <h3><%= l(:label_project) %></h3>
-        <span class="js-project-menu"></span>
-    <% end %>
-
-    <h3><%= l(:label_general) %></h3>
-    <span class="js-general-menu"></span>
-
-    <span class="js-sidebar flyout-menu__sidebar"></span>
-
-    <h3><%= l(:label_profile) %></h3>
-    <span class="js-profile-menu"></span>
-
-</div>
-
-
-<div id="top-menu">
-    <div id="account">
-        <%= render_menu :account_menu -%>
+  <% if User.current.logged? || !Setting.login_required? %>
+    <div class="flyout-menu__search">
+      <%= form_tag(search_path(id: @project), :method => :get) do %>
+        <%= hidden_field_tag(controller.default_search_scope, 1, :id => nil) if controller.default_search_scope %>
+        <%= label_tag 'flyout-search', sprite_icon('search', l(:label_search), icon_only: true), :class => 'search-magnifier search-magnifier--flyout' %>
+        <%= text_field_tag 'q', @question, :id => 'flyout-search', :class => 'small js-search-input', :placeholder => l(:label_search) %>
+      <% end %>
     </div>
-    <%= content_tag('div', "#{l(:label_logged_as)} #{link_to_user(User.current, :format => :username)}".html_safe, :id => 'loggedas') if User.current.logged? %>
-    <%= render_menu :top_menu if User.current.logged? || !Setting.login_required? -%>
+  <% end %>
+  <% if User.current.logged? %>
+    <div class="flyout-menu__avatar">
+      <%= link_to(avatar(User.current, :size => "40"), user_path(User.current)) %>
+      <%= link_to_user(User.current, :format => :username) %>
+    </div>
+  <% end %>
+  <% if display_main_menu?(@project) %>
+    <h3><%= l(:label_project) %></h3>
+    <span class="js-project-menu"></span>
+  <% end %>
+  <h3><%= l(:label_general) %></h3>
+  <span class="js-general-menu"></span>
+  <span class="js-sidebar flyout-menu__sidebar"></span>
+  <h3><%= l(:label_profile) %></h3>
+  <span class="js-profile-menu"></span>
 </div>
 
-<div id="header">
+<%# ── Legacy top-menu & header — hidden visually, kept for Redmine JS ── %>
+<div id="top-menu" class="tz-legacy-hidden">
+  <div id="account"><%= render_menu :account_menu -%></div>
+  <%= content_tag('div', "#{l(:label_logged_as)} #{link_to_user(User.current, :format => :username)}".html_safe, :id => 'loggedas') if User.current.logged? %>
+  <%= render_menu :top_menu if User.current.logged? || !Setting.login_required? -%>
+</div>
 
-    <a href="#" class="mobile-toggle-button js-flyout-menu-toggle-button"></a>
-
-    <% if User.current.logged? || !Setting.login_required? %>
+<div id="header" class="tz-legacy-hidden">
+  <a href="#" class="mobile-toggle-button js-flyout-menu-toggle-button"></a>
+  <% if User.current.logged? || !Setting.login_required? %>
     <div id="quick-search">
-        <%= form_tag(search_path(id: @project), :method => :get ) do %>
+      <%= form_tag(search_path(id: @project), :method => :get) do %>
         <%= hidden_field_tag 'scope', default_search_project_scope, :id => nil %>
         <%= hidden_field_tag(controller.default_search_scope, 1, :id => nil) if controller.default_search_scope %>
-        <label for='q'>
-          <%= link_to l(:label_search), search_path(id: @project, :scope => default_search_project_scope), :accesskey => accesskey(:search) %>:
-        </label>
-        <%= text_field_tag 'q', @question, :size => 20, :class => 'small', :accesskey => accesskey(:quick_search),
-                            :data => {
-                                :auto_complete => true
-                            } %>
-        <% end %>
-        <%= render_project_jump_box %>
+        <label for="q"><%= link_to l(:label_search), search_path(id: @project, :scope => default_search_project_scope), :accesskey => accesskey(:search) %>:</label>
+        <%= text_field_tag 'q', @question, :size => 20, :class => 'small js-search-input',
+              :accesskey => accesskey(:quick_search), :data => { :auto_complete => true } %>
+      <% end %>
+      <%= render_project_jump_box %>
     </div>
-    <% end %>
-
-    <h1><%= page_header_title %></h1>
-
-    <% if display_main_menu?(@project) %>
+  <% end %>
+  <h1><%= page_header_title %></h1>
+  <% if display_main_menu?(@project) %>
     <div id="main-menu" class="tabs">
-        <%= render_main_menu(@project) %>
-        <div class="tabs-buttons" style="display:none;">
-            <button class="tab-left icon-only" onclick="moveTabLeft(this); return false;">
-              <%= sprite_icon("angle-left", rtl: true) %>
-            </button>
-            <button class="tab-right icon-only" onclick="moveTabRight(this); return false;">
-              <%= sprite_icon("angle-right", rtl: true) %>
-            </button>
-        </div>
+      <%= render_main_menu(@project) %>
+      <div class="tabs-buttons" style="display:none;">
+        <button class="tab-left icon-only" onclick="moveTabLeft(this); return false;"><%= sprite_icon("angle-left", rtl: true) %></button>
+        <button class="tab-right icon-only" onclick="moveTabRight(this); return false;"><%= sprite_icon("angle-right", rtl: true) %></button>
+      </div>
     </div>
-    <% end %>
+  <% end %>
 </div>
 
+<%# ════════════════════════════════════════════════════════════════════════
+    MODERN TWO-ROW NAVBAR
+    Row 1 — Logo  |  Search  |  Bell + User
+    Row 2 — Home  My page  Projects  Administration  Help
+════════════════════════════════════════════════════════════════════════ %>
+<nav class="tz-nav" id="tz-nav">
+
+  <%# ── Row 1: logo / search / user ── %>
+  <div class="tz-nav__row1">
+
+    <%# Left: hamburger + logo %>
+    <div class="tz-nav__left">
+      <button class="tz-nav__hamburger js-flyout-menu-toggle-button" type="button" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <%= link_to root_path, class: 'tz-nav__logo' do %>
+        <span class="tz-nav__logo-mark">Z</span>
+        <span class="tz-nav__logo-text"><%= Setting.app_title.presence || 'Redmine' %></span>
+      <% end %>
+    </div>
+
+    <%# Center: search %>
+    <% if User.current.logged? || !Setting.login_required? %>
+      <div class="tz-nav__search">
+        <%= form_tag(search_path(id: @project), method: :get, class: 'tz-nav__search-form') do %>
+          <%= hidden_field_tag 'scope', default_search_project_scope, id: nil %>
+          <%= hidden_field_tag(controller.default_search_scope, 1, id: nil) if controller.default_search_scope %>
+          <svg class="tz-nav__search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+               fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <%= text_field_tag 'q', @question,
+                id: 'tz-search-q',
+                class: 'tz-nav__search-input js-search-input',
+                placeholder: l(:label_search),
+                data: { auto_complete: true } %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%# Right: notification bell + user area %>
+    <div class="tz-nav__right">
+
+      <%# Bell %>
+      <button class="tz-nav__icon-btn" type="button" title="Notifications" aria-label="Notifications">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+      </button>
+
+      <%# User / login %>
+      <% if User.current.logged? %>
+        <div class="tz-nav__user" id="tz-user-wrap">
+          <button class="tz-nav__user-btn" type="button" id="tz-user-toggle" aria-expanded="false">
+            <span class="tz-nav__avatar"><%= User.current.name.first(1).upcase %></span>
+            <span class="tz-nav__user-info">
+              <span class="tz-nav__user-name"><%= User.current.name %></span>
+              <span class="tz-nav__user-role"><%= User.current.admin? ? 'Admin' : 'User' %></span>
+            </span>
+            <svg class="tz-nav__chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </button>
+
+          <div class="tz-nav__dropdown" id="tz-user-dropdown" aria-hidden="true">
+            <%= link_to l(:label_my_account), my_account_path, class: 'tz-nav__drop-item' %>
+            <%= link_to l(:label_my_page),    my_page_path,    class: 'tz-nav__drop-item' %>
+            <% if User.current.admin? %>
+              <%= link_to l(:label_administration), admin_path, class: 'tz-nav__drop-item' %>
+            <% end %>
+            <div class="tz-nav__drop-divider"></div>
+            <%= link_to l(:label_logout), signout_path, method: :delete,
+                  class: 'tz-nav__drop-item tz-nav__drop-item--danger' %>
+          </div>
+        </div>
+      <% else %>
+        <%= link_to l(:label_login), signin_path, class: 'tz-nav__login-btn' %>
+      <% end %>
+
+    </div><%# /tz-nav__right %>
+  </div><%# /tz-nav__row1 %>
+
+  <%# ── Row 2: main nav links (centered) ── %>
+  <div class="tz-nav__row2">
+    <div class="tz-nav__links">
+
+      <%= link_to l(:label_home), home_path,
+            class: "tz-nav__link #{controller_name == 'welcome' ? 'tz-nav__link--active' : ''}" %>
+
+      <% if User.current.logged? %>
+        <%= link_to l(:label_my_page), my_page_path,
+              class: "tz-nav__link #{controller_name == 'my' && action_name == 'page' ? 'tz-nav__link--active' : ''}" %>
+      <% end %>
+
+      <%# "Projects" — plain link, active on all dashboard pages when not inside a project %>
+      <% project_pages = %w[projects activities issues timelog] %>
+      <%= link_to l(:label_project_plural), projects_path,
+            class: "tz-nav__link #{project_pages.include?(controller_name) && @project.nil? ? 'tz-nav__link--active' : ''}" %>
+
+      <%# ── Administration dropdown (admin only) ── %>
+      <% if User.current.admin? %>
+        <% admin_pages = %w[admin users groups roles trackers issue_statuses workflows
+                            custom_fields enumerations settings auth_sources plugins] %>
+        <div class="tz-nav__drop-wrap" id="tz-dd-admin">
+          <button type="button"
+                  class="tz-nav__link tz-nav__link--dd <%= admin_pages.include?(controller_name) ? 'tz-nav__link--active' : '' %>"
+                  aria-haspopup="true" aria-expanded="false">
+            <%= l(:label_administration) %>
+            <svg class="tz-nav__dd-caret" xmlns="http://www.w3.org/2000/svg" width="11" height="11"
+                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </button>
+          <div class="tz-nav__dd-menu" role="menu" aria-hidden="true">
+            <div class="tz-nav__dd-section">
+              <%= link_to l(:label_project_plural),        projects_path,       class: 'tz-nav__dd-item', role: 'menuitem' %>
+              <%= link_to l(:label_user_plural),           users_path,          class: 'tz-nav__dd-item', role: 'menuitem' %>
+              <%= link_to l(:label_group_plural),          groups_path,         class: 'tz-nav__dd-item', role: 'menuitem' %>
+              <%= link_to l(:label_role_and_permissions),  roles_path,          class: 'tz-nav__dd-item', role: 'menuitem' %>
+            </div>
+            <div class="tz-nav__dd-divider"></div>
+            <div class="tz-nav__dd-section">
+              <%= link_to l(:label_tracker_plural),        trackers_path,       class: 'tz-nav__dd-item', role: 'menuitem' %>
+              <%= link_to l(:label_issue_status_plural),   issue_statuses_path, class: 'tz-nav__dd-item', role: 'menuitem' %>
+              <%= link_to l(:label_workflow),              workflows_path,      class: 'tz-nav__dd-item', role: 'menuitem' %>
+              <%= link_to l(:label_custom_field_plural),   custom_fields_path,  class: 'tz-nav__dd-item', role: 'menuitem' %>
+              <%= link_to l(:label_enumerations),          enumerations_path,   class: 'tz-nav__dd-item', role: 'menuitem' %>
+            </div>
+            <div class="tz-nav__dd-divider"></div>
+            <div class="tz-nav__dd-section">
+              <%= link_to l(:label_settings),              settings_path,       class: 'tz-nav__dd-item', role: 'menuitem' %>
+              <%= link_to l(:label_ldap_authentication),   auth_sources_path,   class: 'tz-nav__dd-item', role: 'menuitem' %>
+              <%= link_to l(:label_plugins),               admin_plugins_path,  class: 'tz-nav__dd-item', role: 'menuitem' %>
+              <%= link_to l(:label_information),           admin_info_path,     class: 'tz-nav__dd-item', role: 'menuitem' %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <%= link_to l(:label_help), Redmine::Info.help_url,
+            class: 'tz-nav__link', target: '_blank', rel: 'noopener' %>
+
+    </div>
+  </div><%# /tz-nav__row2 %>
+
+</nav><%# /tz-nav %>
+
+<%# ── Main content — original Redmine structure, unchanged ── %>
 <div id="main" class="<%= sidebar_content? ? 'collapsiblesidebar' : 'nosidebar' %>">
   <%= javascript_tag "$('#main.collapsiblesidebar').collapsibleSidebar();" if sidebar_content? %>
-    <div id="sidebar">
-        <% if sidebar_content? %>
-          <div id="sidebar-switch-panel" style="visibility: hidden;">
-            <a id="sidebar-switch-button" class="" href="#">
-              <%= sprite_icon("chevrons-right", size: 20, rtl: true) %></a>
-          </div>
-          <%= javascript_tag "$('#sidebar-switch-panel').css('visibility', 'visible');" %>
-        <% end %>
-        <div id="sidebar-wrapper">
-          <%= yield :sidebar %>
-          <%= view_layouts_base_sidebar_hook_response %>
-        </div>
+  <div id="sidebar">
+    <% if sidebar_content? %>
+      <div id="sidebar-switch-panel" style="visibility:hidden;">
+        <a id="sidebar-switch-button" href="#"><%= sprite_icon("chevrons-right", size: 20, rtl: true) %></a>
+      </div>
+      <%= javascript_tag "$('#sidebar-switch-panel').css('visibility', 'visible');" %>
+    <% end %>
+    <div id="sidebar-wrapper">
+      <%= yield :sidebar %>
+      <%= view_layouts_base_sidebar_hook_response %>
     </div>
+  </div>
 
-    <div id="content">
-        <%= render_flash_messages %>
-        <% if @project && !@project.active? %>
-          <p class="warning"><span class="icon icon-lock"><%= sprite_icon('lock', l(:text_project_closed)) %></span></p>
-        <% end %>
-        <%= yield %>
-        <%= call_hook :view_layouts_base_content %>
-        <div style="clear:both;"></div>
-    </div>
+  <div id="content">
+    <%= render_flash_messages %>
+    <% if @project && !@project.active? %>
+      <p class="warning"><span class="icon icon-lock"><%= sprite_icon('lock', l(:text_project_closed)) %></span></p>
+    <% end %>
+    <%= yield %>
+    <%= call_hook :view_layouts_base_content %>
+    <div style="clear:both;"></div>
+  </div>
 </div>
+
 <div id="footer">
-    Powered by <%= link_to Redmine::Info.app_name, Redmine::Info.url, :target => '_blank', :rel => 'noopener' %> &copy; 2006-2026 Jean-Philippe Lang
+  Powered by <%= link_to Redmine::Info.app_name, Redmine::Info.url, :target => '_blank', :rel => 'noopener' %>
+  &copy; 2006-<%= Time.now.year %> Jean-Philippe Lang
 </div>
 
 <div id="ajax-indicator" style="display:none;">
-  <span class="icon">
-    <%= sprite_icon 'loader', l(:label_loading), css_class: 'svg-loader' %>
-  </span>
+  <span class="icon"><%= sprite_icon 'loader', l(:label_loading), css_class: 'svg-loader' %></span>
 </div>
 <div id="ajax-modal" style="display:none;"></div>
-<div id="icon-copy-source" style="display: none;"><%= sprite_icon('') %></div>
+<div id="icon-copy-source" style="display:none;"><%= sprite_icon('') %></div>
 
-</div>
+</div><%# /wrapper %>
+
+<%# ── Dropdown menus — vanilla JS, no dependency ── %>
+<script>
+(function () {
+  /* ---- generic dropdown helper ---- */
+  function initDropdown(wrapId, toggleSel, menuSel) {
+    var wrap = document.getElementById(wrapId);
+    if (!wrap) return;
+    var btn  = wrap.querySelector(toggleSel);
+    var menu = wrap.querySelector(menuSel);
+    if (!btn || !menu) return;
+
+    var closeTimer;
+    function open()  { clearTimeout(closeTimer); menu.classList.add('tz-nav__dd-menu--open');  btn.setAttribute('aria-expanded','true');  menu.setAttribute('aria-hidden','false'); }
+    function close() { menu.classList.remove('tz-nav__dd-menu--open'); btn.setAttribute('aria-expanded','false'); menu.setAttribute('aria-hidden','true'); }
+    function scheduleClose() { closeTimer = setTimeout(close, 150); }
+    function toggle(e) { e.stopPropagation(); menu.classList.contains('tz-nav__dd-menu--open') ? close() : open(); }
+
+    btn.addEventListener('click', toggle);
+
+    /* hover — timer prevents close firing when cursor moves into the menu panel */
+    wrap.addEventListener('mouseenter', open);
+    wrap.addEventListener('mouseleave', scheduleClose);
+    menu.addEventListener('mouseenter', function() { clearTimeout(closeTimer); });
+    menu.addEventListener('mouseleave', scheduleClose);
+
+    document.addEventListener('click', close);
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') close(); });
+  }
+
+  initDropdown('tz-dd-admin', 'button', '.tz-nav__dd-menu');
+
+  /* ---- user account dropdown ---- */
+  var toggle   = document.getElementById('tz-user-toggle');
+  var dropdown = document.getElementById('tz-user-dropdown');
+  if (toggle && dropdown) {
+    toggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var open = dropdown.classList.toggle('tz-nav__dropdown--open');
+      toggle.setAttribute('aria-expanded', String(open));
+      dropdown.setAttribute('aria-hidden', String(!open));
+    });
+    document.addEventListener('click', function () {
+      dropdown.classList.remove('tz-nav__dropdown--open');
+      toggle.setAttribute('aria-expanded', 'false');
+      dropdown.setAttribute('aria-hidden', 'true');
+    });
+  }
+})();
+</script>
+
 <%= call_hook :view_layouts_base_body_bottom %>
 </body>
 </html>

@@ -1,74 +1,150 @@
-<div class="contextual">
-<%= link_to sprite_icon('time-add', l(:button_log_time)),
-            _new_time_entry_path(@project, @query.filtered_issue_id),
-            :class => 'icon icon-time-add' if User.current.allowed_to?(:log_time, @project, :global => true) %>
-<%= actions_dropdown do %>
-  <% if User.current.allowed_to?(:import_time_entries, @project, :global => true) && User.current.allowed_to?(:log_time, @project, :global => true) %>
-    <%= link_to sprite_icon('import', l(:button_import)), new_time_entries_import_path(:project_id => @project), :class => 'icon icon-import' %>
-  <% end %>
+<%# Spent time — wrapped in the same modern dashboard shell as
+    Projects / Activity / Issues.
+    All existing Redmine ERB logic, filters, pagination, hooks kept intact. %>
 
-  <%= link_to_if_authorized sprite_icon('settings', l(:label_settings)),
-                            {:controller => 'projects', :action => 'settings', :id => @project, :tab => 'activities'},
-                            :class => 'icon icon-settings' if User.current.allowed_to?(:manage_project_activities, @project) %>
-<% end %>
-</div>
+<div class="tz-pi-page">
 
-<h2><%= @query.new_record? ? l(:label_spent_time) : @query.name %></h2>
-<%= @query.persisted? && @query.description.present? ? content_tag('p', @query.description, class: 'subtitle') : '' %>
+  <%# ── Page title ── %>
+  <div class="tz-pi-header">
+    <h1 class="tz-pi-title">
+      <%= @query.new_record? ? l(:label_spent_time) : @query.name %>
+    </h1>
+    <% if @query.persisted? && @query.description.present? %>
+      <p class="tz-dash-subtitle"><%= @query.description %></p>
+    <% end %>
+  </div>
 
-<%= form_tag(_time_entries_path(@project, nil), :method => :get, :id => 'query_form') do %>
-<%= render :partial => 'date_range' %>
-<% end %>
+  <%# ── Topbar: shared tab strip (left) + action buttons (right) ── %>
+  <div class="tz-pi-topbar">
+    <%= render 'shared/project_tabs', active: 'timelog' %>
 
-<% if @query.valid? %>
-<% if @entries.empty? %>
-<p class="nodata"><%= l(:label_no_data) %></p>
-<% else %>
-<%= render_query_totals(@query) %>
-<%= render :partial => 'list', :locals => { :entries => @entries }%>
-<span class="pagination"><%= pagination_links_full @entry_pages, @entry_count %></span>
-
-<% other_formats_links do |f| %>
-  <%= f.link_to_with_query_parameters 'CSV', {}, :onclick => "showModal('csv-export-options', '330px'); return false;" %>
-  <%= f.link_to_with_query_parameters 'Atom', :key => User.current.atom_key %>
-<% end %>
-
-<div id="csv-export-options" style="display:none;">
-  <h3 class="title"><%= l(:label_export_options, :export_format => 'CSV') %></h3>
-  <%= form_tag(_time_entries_path(@project, nil, :format => 'csv'), :method => :get, :id => 'csv-export-form') do %>
-  <%= query_as_hidden_field_tags @query %>
-  <%= hidden_field_tag('query_name', @query.name) %>
-  <p>
-    <label><%= radio_button_tag 'c[]', '', true %> <%= l(:description_selected_columns) %></label><br />
-    <label><%= radio_button_tag 'c[]', 'all_inline' %> <%= l(:description_all_columns) %></label>
-  </p>
-  <% if @query.available_block_columns.any? %>
-    <fieldset id="csv-export-block-columns">
-      <legend>
-        <%= toggle_checkboxes_link('#csv-export-block-columns input[type=checkbox]') %>
-      </legend>
-      <% @query.available_block_columns.each do |column| %>
-        <label><%= check_box_tag 'c[]', column.name, @query.has_column?(:column), :id => nil %> <%= column.caption %></label>
+    <div class="tz-pi-actions">
+      <% if User.current.allowed_to?(:log_time, @project, global: true) %>
+        <%= link_to _new_time_entry_path(@project, @query.filtered_issue_id),
+              class: 'tz-pi-btn tz-pi-btn--primary' do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none"
+               viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          <%= l(:button_log_time) %>
+        <% end %>
       <% end %>
-    </fieldset>
-  <% end %>
-  <%= export_csv_encoding_select_tag %>
-  <%= export_csv_separator_select_tag %>
-  <p class="buttons">
-    <%= submit_tag l(:button_export), :name => nil, :onclick => "hideModal(this);", :data => { :disable_with => false } %>
-    <%= link_to_function l(:button_cancel), "hideModal(this);" %>
-  </p>
-  <% end %>
-</div>
-<% end %>
-<% end %>
 
+      <button type="button" class="tz-pi-btn tz-pi-btn--secondary" id="tz-timelog-filter-toggle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/>
+        </svg>
+        <%= l(:label_filter_plural) %>
+      </button>
+    </div>
+  </div>
+
+  <%# ── Secondary contextual actions (import, settings) ── %>
+  <div class="tz-dash-contextual">
+    <%= actions_dropdown do %>
+      <% if User.current.allowed_to?(:import_time_entries, @project, global: true) &&
+              User.current.allowed_to?(:log_time, @project, global: true) %>
+        <%= link_to sprite_icon('import', l(:button_import)),
+              new_time_entries_import_path(project_id: @project),
+              class: 'icon icon-import' %>
+      <% end %>
+      <%= link_to_if_authorized sprite_icon('settings', l(:label_settings)),
+            { controller: 'projects', action: 'settings', id: @project, tab: 'activities' },
+            class: 'icon icon-settings' if User.current.allowed_to?(:manage_project_activities, @project) %>
+    <% end %>
+  </div>
+
+  <%# ── Filter / date-range form (collapsible) ── %>
+  <div class="tz-pi-filter-bar" id="tz-timelog-filter-bar">
+    <%= form_tag(_time_entries_path(@project, nil), method: :get, id: 'query_form') do %>
+      <%= render partial: 'date_range' %>
+    <% end %>
+  </div>
+
+  <%# ── Time entries content ── %>
+  <div class="tz-dash-content">
+    <% if @query.valid? %>
+      <% if @entries.empty? %>
+        <div class="tz-pi-empty">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none"
+               viewBox="0 0 24 24" stroke="#9ca3af" stroke-width="1.4">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          <p><%= l(:label_no_data) %></p>
+        </div>
+      <% else %>
+        <%= render_query_totals(@query) %>
+        <%= render partial: 'list', locals: { entries: @entries } %>
+        <span class="pagination"><%= pagination_links_full @entry_pages, @entry_count %></span>
+
+        <%# Format links — kept intact %>
+        <% other_formats_links do |f| %>
+          <%= f.link_to_with_query_parameters 'CSV', {},
+                onclick: "showModal('csv-export-options', '330px'); return false;" %>
+          <%= f.link_to_with_query_parameters 'Atom', key: User.current.atom_key %>
+        <% end %>
+
+        <%# CSV export modal — kept from original %>
+        <div id="csv-export-options" style="display:none;">
+          <h3 class="title"><%= l(:label_export_options, export_format: 'CSV') %></h3>
+          <%= form_tag(_time_entries_path(@project, nil, format: 'csv'),
+                method: :get, id: 'csv-export-form') do %>
+            <%= query_as_hidden_field_tags @query %>
+            <%= hidden_field_tag('query_name', @query.name) %>
+            <p>
+              <label><%= radio_button_tag 'c[]', '', true %> <%= l(:description_selected_columns) %></label><br />
+              <label><%= radio_button_tag 'c[]', 'all_inline' %> <%= l(:description_all_columns) %></label>
+            </p>
+            <% if @query.available_block_columns.any? %>
+              <fieldset id="csv-export-block-columns">
+                <legend><%= toggle_checkboxes_link('#csv-export-block-columns input[type=checkbox]') %></legend>
+                <% @query.available_block_columns.each do |column| %>
+                  <label>
+                    <%= check_box_tag 'c[]', column.name, @query.has_column?(:column), id: nil %>
+                    <%= column.caption %>
+                  </label>
+                <% end %>
+              </fieldset>
+            <% end %>
+            <%= export_csv_encoding_select_tag %>
+            <%= export_csv_separator_select_tag %>
+            <p class="buttons">
+              <%= submit_tag l(:button_export), name: nil,
+                    onclick: "hideModal(this);",
+                    data: { disable_with: false } %>
+              <%= link_to_function l(:button_cancel), "hideModal(this);" %>
+            </p>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+  </div><%# /tz-dash-content %>
+
+</div><%# /tz-pi-page %>
+
+<%# ── Filter toggle JS ── %>
+<script>
+(function () {
+  var btn = document.getElementById('tz-timelog-filter-toggle');
+  var bar = document.getElementById('tz-timelog-filter-bar');
+  if (!btn || !bar) return;
+  btn.addEventListener('click', function () {
+    bar.classList.toggle('tz-pi-filter-bar--open');
+  });
+})();
+</script>
+
+<%# ── Sidebar hook — original Redmine, unchanged ── %>
 <% content_for :sidebar do %>
-  <%= render :partial => 'timelog/sidebar' %>
+  <%= render partial: 'timelog/sidebar' %>
 <% end %>
 
 <% html_title(@query.new_record? ? l(:label_spent_time) : @query.name, l(:label_details)) %>
 
 <% content_for :header_tags do %>
-    <%= auto_discovery_link_tag(:atom, {:issue_id => @issue, :format => 'atom', :key => User.current.atom_key}, :title => l(:label_spent_time)) %>
+  <%= auto_discovery_link_tag(:atom,
+        { issue_id: @issue, format: 'atom', key: User.current.atom_key },
+        title: l(:label_spent_time)) %>
 <% end %>

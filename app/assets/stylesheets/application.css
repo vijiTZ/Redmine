@@ -2619,3 +2619,1976 @@ th[role=columnheader]:not(.no-sort):hover:after {
 #sidebar .api-key-actions .copy-api-key-link svg {
   opacity: 1;
 }
+
+/* =============================================================================
+   TZ Modern UI — Two-Row Navbar + Dashboard Shell
+   All selectors prefixed .tz-nav__* / .tz-pi-* / .tz-dash-*
+   Redmine's own styles are never touched outside these scopes.
+============================================================================= */
+
+/* ── Hide legacy blue bars (kept in DOM for Redmine JS) ── */
+.tz-legacy-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0,0,0,0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* ── Wrapper: only padding-top for fixed navbar; leave background/content alone ── */
+#wrapper { padding-top: 90px; }
+
+/* ── Gray background scoped to our dashboard page wrappers only ── */
+.tz-po-page,
+.tz-ov-page {
+  background: #f5f7fb;
+  min-height: calc(100vh - 90px);
+}
+
+/* ── On pages that use our wrappers, let #content go transparent ── */
+#content:has(.tz-pi-page),
+#content:has(.tz-po-page),
+#content:has(.tz-ov-page) {
+  background: transparent;
+  padding: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TWO-ROW NAVBAR
+   Row 1 (56px): Logo | Search | Bell + User
+   Row 2 (34px): Home  My page  Projects  Administration  Help
+───────────────────────────────────────────────────────────────────────────── */
+.tz-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Row 1 ── */
+.tz-nav__row1 {
+  display: flex;
+  align-items: center;
+  height: 56px;
+  padding: 0 28px;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+/* ── Row 2 ── */
+.tz-nav__row2 {
+  display: flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 28px;
+  border-top: 1px solid #f3f4f6;
+  box-sizing: border-box;
+}
+
+/* ── Left: hamburger + logo ── */
+.tz-nav__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.tz-nav__hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 20px;
+  height: 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+.tz-nav__hamburger span {
+  display: block;
+  height: 2px;
+  background: #374151;
+  border-radius: 2px;
+}
+
+.tz-nav__logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+.tz-nav__logo:hover { text-decoration: none; }
+
+.tz-nav__logo-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: #16a34a;
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 800;
+  border-radius: 7px;
+  flex-shrink: 0;
+}
+
+.tz-nav__logo-text {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
+}
+
+/* ── Search (center of row 1) ── */
+.tz-nav__search {
+  flex: 1;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.tz-nav__search-form {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.tz-nav__search-icon {
+  position: absolute;
+  left: 12px;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.tz-nav__search-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 14px 0 38px;
+  font-size: 0.875rem;
+  color: #111827;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  outline: none;
+  box-sizing: border-box;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+.tz-nav__search-input::placeholder { color: #9ca3af; }
+.tz-nav__search-input:focus {
+  background: #fff;
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22,163,74,0.12);
+}
+
+/* ── Right side of row 1: bell + user ── */
+.tz-nav__right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* Bell */
+.tz-nav__icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  background: none;
+  border: none;
+  border-radius: 7px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: background 0.13s, color 0.13s;
+  padding: 0;
+}
+.tz-nav__icon-btn:hover { background: #f3f4f6; color: #111827; }
+
+/* User button */
+.tz-nav__user { position: relative; margin-left: 4px; }
+
+.tz-nav__user-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.13s;
+}
+.tz-nav__user-btn:hover { background: #f3f4f6; }
+
+.tz-nav__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #16a34a;
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.tz-nav__user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+}
+
+.tz-nav__user-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #111827;
+  white-space: nowrap;
+}
+
+.tz-nav__user-role {
+  font-size: 0.6875rem;
+  color: #6b7280;
+}
+
+.tz-nav__chevron {
+  color: #9ca3af;
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+.tz-nav__user-btn[aria-expanded="true"] .tz-nav__chevron { transform: rotate(180deg); }
+
+/* User dropdown */
+.tz-nav__dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+  padding: 6px 0;
+  z-index: 1200;
+}
+.tz-nav__dropdown--open { display: block; }
+
+.tz-nav__drop-item {
+  display: block;
+  padding: 9px 16px;
+  font-size: 0.8125rem;
+  color: #374151;
+  text-decoration: none;
+  transition: background 0.12s;
+}
+.tz-nav__drop-item:hover { background: #f9fafb; color: #111827; text-decoration: none; }
+.tz-nav__drop-item--danger { color: #dc2626; }
+.tz-nav__drop-item--danger:hover { background: #fef2f2; color: #dc2626; }
+
+.tz-nav__drop-divider { height: 1px; background: #f3f4f6; margin: 5px 0; }
+
+/* Login button */
+.tz-nav__login-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 16px;
+  background: #16a34a;
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.14s;
+}
+.tz-nav__login-btn:hover { background: #15803d; color: #fff; text-decoration: none; }
+
+/* ── Row 2 nav links ── */
+.tz-nav__links {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 100%;
+}
+
+.tz-nav__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 100%;
+  padding: 0 14px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #6b7280;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: color 0.13s, border-color 0.13s;
+  box-sizing: border-box;
+}
+.tz-nav__link:hover { color: #111827; text-decoration: none; border-color: #d1d5db; }
+
+/* Active: green underline (matches reference) */
+.tz-nav__link--active {
+  color: #16a34a;
+  font-weight: 600;
+  border-bottom-color: #16a34a;
+}
+
+/* Admin link group wrapper */
+.tz-nav__link-group { display: contents; }
+
+/* ── Responsive ── */
+@media (max-width: 960px) {
+  .tz-nav__links    { display: none; }
+  .tz-nav__row2     { display: none; }
+  .tz-nav__hamburger { display: flex; }
+  #wrapper { padding-top: 56px; }
+}
+@media (max-width: 640px) {
+  .tz-nav__search   { display: none; }
+  .tz-nav__user-info { display: none; }
+  .tz-nav__chevron  { display: none; }
+}
+
+/* =============================================================================
+   TZ Projects Index – Modern SaaS Card Layout
+   Scoped entirely to .tz-pi-* so nothing else in Redmine is affected.
+============================================================================= */
+
+/* ── Page shell ── */
+.tz-pi-page {
+  width: 100%;
+  padding: 28px 24px 48px;
+  background: #f5f7fb;
+  min-height: calc(100vh - 90px);
+  box-sizing: border-box;
+}
+
+/* ── Header row (title only) ── */
+.tz-pi-header {
+  margin-bottom: 16px;
+}
+
+.tz-pi-title {
+  font-size: 1.625rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  padding: 0;
+  border: none;
+  line-height: 1.2;
+}
+
+/* ── Topbar: tabs left, action buttons right ── */
+.tz-pi-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+/* ── Action buttons (+ Create New, Filter) ── */
+.tz-pi-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Keep Redmine's hidden action links invisible but functional */
+.tz-pi-actions__hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+}
+
+.tz-pi-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: 8px;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: background 0.14s, box-shadow 0.14s;
+  white-space: nowrap;
+}
+
+.tz-pi-btn--primary {
+  background: #16a34a;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(22,163,74,0.25);
+}
+.tz-pi-btn--primary:hover {
+  background: #15803d;
+  color: #fff;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(22,163,74,0.32);
+}
+
+.tz-pi-btn--secondary {
+  background: #fff;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.tz-pi-btn--secondary:hover {
+  background: #f9fafb;
+  color: #111827;
+  text-decoration: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   SHARED DASHBOARD TABS  (.tz-dash-tab)
+   Used by Projects, Activity, Issues, Spent Time pages.
+───────────────────────────────────────────────────────────────────────────── */
+.tz-dash-tabs {
+  display: flex;
+  gap: 0;
+  background: #e9edf4;
+  padding: 4px;
+  border-radius: 999px;
+  width: fit-content;
+  flex-wrap: wrap;
+}
+
+.tz-dash-tab {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 18px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #4b5563;
+  text-decoration: none;
+  border-radius: 999px;
+  transition: background 0.14s, color 0.14s;
+  white-space: nowrap;
+}
+.tz-dash-tab:hover { color: #111827; text-decoration: none; }
+.tz-dash-tab--active {
+  background: #111827;
+  color: #fff !important;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Page title ── */
+.tz-dash-subtitle {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin: 4px 0 0;
+}
+
+/* Contextual link strip below topbar ── */
+.tz-dash-contextual {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0;       /* neutralized — matches Activity page which has no contextual bar */
+  flex-wrap: wrap;
+}
+
+/* Dashboard content wrapper ── */
+.tz-dash-content {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  overflow-x: auto;
+}
+
+/* Inline empty state ── */
+.tz-pi-empty-inline {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  padding: 48px;
+}
+
+/* ── Old .tz-pi-tab aliases kept for any cached markup ── */
+.tz-pi-tabs  { display: flex; gap: 0; background: #e9edf4; padding: 4px; border-radius: 999px; width: fit-content; flex-wrap: wrap; }
+.tz-pi-tab   { display: inline-flex; align-items: center; padding: 6px 18px; font-size: 0.8125rem; font-weight: 500; color: #4b5563; text-decoration: none; border-radius: 999px; transition: background 0.14s, color 0.14s; white-space: nowrap; }
+.tz-pi-tab:hover { color: #111827; text-decoration: none; }
+.tz-pi-tab--active { background: #111827; color: #fff !important; font-weight: 600; text-decoration: none; }
+
+/* ── Filter bar (Redmine query form, collapsible) ── */
+.tz-pi-filter-bar {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 0;
+  margin-bottom: 0;       /* no gap while collapsed — keeps spacing equal to Activity */
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.25s ease, padding 0.25s ease, margin-bottom 0.25s ease;
+}
+.tz-pi-filter-bar--open {
+  max-height: 600px;
+  padding: 16px 20px;
+  margin-bottom: 24px;    /* only adds space when actually expanded */
+}
+
+.tz-pi-filter-bar #query_form_content,
+.tz-pi-filter-bar .filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+/* ── Project card grid ── */
+.tz-pi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 1024px) {
+  .tz-pi-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .tz-pi-grid { grid-template-columns: 1fr; }
+  .tz-pi-tabs { border-radius: 14px; }
+}
+
+/* ── Individual project card ── */
+.tz-pi-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  transition: box-shadow 0.2s, transform 0.2s;
+  min-height: 130px;
+}
+
+.tz-pi-card:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.10);
+  transform: translateY(-2px);
+}
+
+/* ── Card head: name + badge ── */
+.tz-pi-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.tz-pi-card__name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #111827;
+  text-decoration: none;
+  line-height: 1.3;
+  flex: 1;
+}
+
+.tz-pi-card__name:hover {
+  color: #16a34a;
+  text-decoration: none;
+}
+
+/* ── Status badge ── */
+.tz-pi-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.tz-pi-badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.tz-pi-badge--active {
+  background: #dcfce7;
+  color: #15803d;
+}
+.tz-pi-badge--active .tz-pi-badge__dot { background: #16a34a; }
+
+.tz-pi-badge--closed {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.tz-pi-badge--closed .tz-pi-badge__dot { background: #ef4444; }
+
+.tz-pi-badge--archived {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+.tz-pi-badge--archived .tz-pi-badge__dot { background: #9ca3af; }
+
+/* ── Description ── */
+.tz-pi-card__desc {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  line-height: 1.55;
+  flex: 1;
+  margin: 0 0 14px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Card footer ── */
+.tz-pi-card__footer {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #f3f4f6;
+  margin-top: auto;
+}
+
+.tz-pi-card__link {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #16a34a;
+  text-decoration: none;
+}
+
+.tz-pi-card__link:hover {
+  text-decoration: underline;
+  color: #15803d;
+}
+
+/* ── Empty state ── */
+.tz-pi-empty {
+  text-align: center;
+  padding: 64px 24px;
+  color: #9ca3af;
+  background: #fff;
+  border: 1px dashed #d1d5db;
+  border-radius: 14px;
+  margin-bottom: 24px;
+}
+
+.tz-pi-empty svg {
+  display: block;
+  margin: 0 auto 16px;
+  opacity: 0.5;
+}
+
+.tz-pi-empty p {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* ── Legend ── */
+.tz-pi-legend {
+  display: flex;
+  gap: 20px;
+  justify-content: flex-end;
+  align-items: center;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-top: 12px;
+}
+
+.tz-pi-legend svg {
+  display: inline;
+  vertical-align: middle;
+  width: 14px;
+  height: 14px;
+}
+/* end TZ Projects Index ====================================================== */
+
+/* ── Project Overview (tz-po-*) ──────────────────────────────────── */
+
+.tz-po-page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 28px 24px 56px;
+  background: #f5f7fb;
+}
+
+/* Header card */
+.tz-po-header-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 24px 28px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.tz-po-header-card__left {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+.tz-po-project-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #16a34a;
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.tz-po-project-name {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 4px;
+  line-height: 1.2;
+}
+.tz-po-project-desc {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0 0 8px;
+  line-height: 1.5;
+}
+.tz-po-header-card__right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* Project tabs */
+.tz-po-tabs-wrap {
+  overflow-x: auto;
+  margin-bottom: 20px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.tz-po-tabs-wrap::-webkit-scrollbar { display: none; }
+.tz-po-tabs {
+  display: flex;
+  gap: 4px;
+  background: #e9edf4;
+  padding: 4px;
+  border-radius: 999px;
+  width: fit-content;
+}
+.tz-po-tab {
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #374151;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+.tz-po-tab:hover { background: rgba(255,255,255,0.6); color: #111827; }
+.tz-po-tab--active {
+  background: #111827;
+  color: #fff !important;
+  font-weight: 600;
+}
+
+/* Meta strip */
+.tz-po-meta-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  align-items: center;
+  font-size: 0.8125rem;
+  color: #6b7280;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 16px;
+  margin-bottom: 20px;
+}
+.tz-po-meta-strip a { color: #16a34a; }
+.tz-po-meta-strip svg { vertical-align: middle; margin-right: 4px; }
+
+/* Two-column grid */
+.tz-po-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 18px;
+  align-items: start;
+}
+.tz-po-col-left,
+.tz-po-col-right {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Generic card */
+.tz-po-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 20px 22px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.tz-po-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.tz-po-card__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #111827;
+}
+.tz-po-card__link {
+  font-size: 0.8rem;
+  color: #16a34a;
+  text-decoration: none;
+  font-weight: 500;
+}
+.tz-po-card__link:hover { text-decoration: underline; }
+.tz-po-card__footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #f3f4f6;
+}
+
+/* Footer links */
+.tz-po-footer-link {
+  font-size: 0.8125rem;
+  color: #16a34a;
+  text-decoration: none;
+  font-weight: 500;
+}
+.tz-po-footer-link:hover { text-decoration: underline; }
+.tz-po-footer-link--primary {
+  background: #16a34a;
+  color: #fff !important;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+.tz-po-footer-link--primary:hover { background: #15803d; text-decoration: none; }
+
+/* Issue table */
+.tz-po-issue-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.tz-po-issue-table thead th {
+  text-align: right;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0 8px 8px;
+  border-bottom: 1px solid #f3f4f6;
+}
+.tz-po-issue-table thead th:first-child { text-align: left; }
+.tz-po-issue-table tbody tr { border-bottom: 1px solid #f9fafb; }
+.tz-po-issue-table tbody tr:last-child { border-bottom: none; }
+.tz-po-issue-table tbody td {
+  padding: 8px 8px;
+  text-align: right;
+  color: #374151;
+}
+.tz-po-issue-table__name { text-align: left !important; }
+.tz-po-issue-table__name a { color: #111827; font-weight: 500; text-decoration: none; }
+.tz-po-issue-table__name a:hover { color: #16a34a; }
+.tz-po-issue-table tbody td a { color: #374151; }
+.tz-po-issue-table tbody td a:hover { color: #16a34a; }
+.tz-po-issue-table__total { font-weight: 600; }
+
+/* Time stats */
+.tz-po-time-stats {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.tz-po-time-stat {
+  flex: 1;
+  min-width: 120px;
+  background: #f9fafb;
+  border: 1px solid #f3f4f6;
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+.tz-po-time-stat__label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+.tz-po-time-stat__value {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* Members */
+.tz-po-members { display: flex; flex-direction: column; gap: 12px; }
+.tz-po-member-role__label {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+.tz-po-member-list { display: flex; flex-direction: column; gap: 6px; }
+.tz-po-member-item { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; }
+.tz-po-member-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #16a34a;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.tz-po-member-avatar--group { background: #6366f1; }
+.tz-po-member-item a { color: #111827; text-decoration: none; }
+.tz-po-member-item a:hover { color: #16a34a; }
+
+/* Subproject list */
+.tz-po-subproject-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.tz-po-subproject-link { font-size: 0.875rem; color: #374151; text-decoration: none; }
+.tz-po-subproject-link:hover { color: #16a34a; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .tz-po-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .tz-po-header-card { flex-direction: column; }
+  .tz-po-header-card__left { flex-direction: column; }
+  .tz-po-time-stats { flex-direction: column; }
+}
+
+/* ── Navbar dropdowns (tz-nav__drop-wrap / tz-nav__dd-*) ──────────── */
+
+.tz-nav__drop-wrap {
+  position: relative;
+}
+
+/* The trigger button looks identical to a regular nav link */
+.tz-nav__link--dd {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-family: inherit;
+}
+.tz-nav__dd-caret {
+  transition: transform 0.18s ease;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+.tz-nav__drop-wrap:hover .tz-nav__dd-caret,
+[aria-expanded="true"] .tz-nav__dd-caret {
+  transform: rotate(180deg);
+}
+
+/* Dropdown panel */
+.tz-nav__dd-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 240px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+  z-index: 2000;
+  padding: 6px 0;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(-6px);
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+}
+.tz-nav__dd-menu--open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Small arrow pointer */
+.tz-nav__dd-menu::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 6px;
+  background: #ffffff;
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  border-left: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
+}
+
+/* Section grouping */
+.tz-nav__dd-section {
+  padding: 4px 0;
+}
+.tz-nav__dd-divider {
+  height: 1px;
+  background: #f3f4f6;
+  margin: 4px 0;
+}
+
+/* Individual items */
+.tz-nav__dd-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 18px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #374151;
+  text-decoration: none;
+  transition: background 0.12s ease, color 0.12s ease;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.tz-nav__dd-item:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+.tz-nav__dd-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: #f0fdf4;
+  color: #16a34a;
+  flex-shrink: 0;
+}
+.tz-nav__dd-icon svg { stroke: #16a34a; }
+
+/* Keep the admin dropdown left-aligned on the right side of the nav */
+#tz-dd-admin .tz-nav__dd-menu {
+  left: auto;
+  right: 0;
+  transform: translateY(-6px);
+}
+#tz-dd-admin .tz-nav__dd-menu--open {
+  transform: translateY(0);
+}
+#tz-dd-admin .tz-nav__dd-menu::before {
+  left: auto;
+  right: 24px;
+  transform: none;
+}
+
+/* ── Project Overview v2 (tz-ov-*) — matches SaaS reference ────────── */
+
+.tz-ov-page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 28px 24px 56px;
+  background: #f5f7fb;
+}
+
+/* Topbar */
+.tz-ov-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.tz-ov-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  color: #9ca3af;
+}
+.tz-ov-breadcrumb__link {
+  color: #6b7280;
+  text-decoration: none;
+}
+.tz-ov-breadcrumb__link:hover { color: #16a34a; }
+.tz-ov-breadcrumb__current { color: #374151; font-weight: 500; }
+.tz-ov-actions { display: flex; align-items: center; gap: 8px; }
+
+/* Page title */
+.tz-ov-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 20px;
+  line-height: 1.2;
+}
+
+/* Two-column grid */
+.tz-ov-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+  align-items: start;
+  margin-top: 20px;
+}
+.tz-ov-left, .tz-ov-right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Generic card */
+.tz-ov-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+/* Card project label + name */
+.tz-ov-card__project-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+.tz-ov-card__project-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 20px;
+}
+
+/* Section title inside card */
+.tz-ov-card__section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 16px;
+}
+.tz-ov-card__section-link {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: #16a34a;
+  text-decoration: none;
+  font-weight: 500;
+}
+.tz-ov-card__section-link:hover { text-decoration: underline; }
+
+/* Card footer */
+.tz-ov-card__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #f3f4f6;
+}
+.tz-ov-card__footer-link {
+  font-size: 0.8125rem;
+  color: #16a34a;
+  text-decoration: none;
+  font-weight: 500;
+}
+.tz-ov-card__footer-link:hover { text-decoration: underline; }
+.tz-ov-card__footer-sep { color: #d1d5db; font-size: 0.8rem; }
+
+/* Issue tracking table */
+.tz-ov-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+.tz-ov-table thead tr {
+  background: #f9fafb;
+  border-radius: 8px;
+}
+.tz-ov-table thead th {
+  padding: 10px 14px;
+  text-align: right;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #6b7280;
+  border-bottom: 1px solid #f3f4f6;
+}
+.tz-ov-table__name-col { text-align: left !important; }
+.tz-ov-table tbody tr { border-bottom: 1px solid #f9fafb; }
+.tz-ov-table tbody tr:last-child { border-bottom: none; }
+.tz-ov-table tbody tr:hover { background: #f9fafb; }
+.tz-ov-table tbody td {
+  padding: 11px 14px;
+  text-align: right;
+  color: #374151;
+  font-size: 0.875rem;
+}
+.tz-ov-table__name { text-align: left !important; }
+.tz-ov-table__name a {
+  color: #16a34a;
+  text-decoration: none;
+  font-weight: 500;
+}
+.tz-ov-table__name a:hover { text-decoration: underline; }
+.tz-ov-table tbody td a { color: #374151; text-decoration: none; }
+.tz-ov-table tbody td a:hover { color: #16a34a; }
+
+/* Time tracking */
+.tz-ov-time-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.tz-ov-time-stat {
+  background: #f9fafb;
+  border: 1px solid #f3f4f6;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.tz-ov-time-stat__label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 5px;
+}
+.tz-ov-time-stat__value {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111827;
+}
+.tz-ov-time-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.tz-ov-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.tz-ov-btn--outline {
+  border: 1.5px solid #16a34a;
+  color: #16a34a;
+  background: transparent;
+}
+.tz-ov-btn--outline:hover {
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+/* Members */
+.tz-ov-members { display: flex; flex-direction: column; gap: 14px; }
+.tz-ov-member-group { display: flex; flex-direction: column; gap: 3px; }
+.tz-ov-member-role {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.tz-ov-member-name {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #111827;
+}
+.tz-ov-member-name a { color: #111827; text-decoration: none; }
+.tz-ov-member-name a:hover { color: #16a34a; }
+
+/* Subproject list */
+.tz-ov-subproject-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.tz-ov-subproject-link { font-size: 0.875rem; color: #374151; text-decoration: none; }
+.tz-ov-subproject-link:hover { color: #16a34a; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .tz-ov-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .tz-ov-time-grid { grid-template-columns: 1fr; }
+  .tz-ov-time-actions { grid-template-columns: 1fr; }
+}
+
+/* ── Administration dropdown spacing fix ────────────────────────────── */
+
+.tz-nav__dd-menu {
+  min-width: 260px;
+}
+.tz-nav__dd-item {
+  padding: 8px 16px;
+  font-size: 0.8375rem;
+  gap: 8px;
+}
+.tz-nav__dd-section {
+  padding: 2px 0;
+}
+.tz-nav__dd-divider {
+  margin: 3px 0;
+}
+
+/* ── Shared global tab strip (tz-gtab__*) ──────────────────────────── */
+
+.tz-gtab__wrap {
+  margin-bottom: 20px;
+}
+.tz-gtab {
+  display: inline-flex;
+  background: #e9edf4;
+  padding: 4px;
+  border-radius: 999px;
+  gap: 2px;
+}
+.tz-gtab__item {
+  padding: 6px 18px;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #374151;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+.tz-gtab__item:hover { background: rgba(255,255,255,0.55); color: #111827; text-decoration: none; }
+.tz-gtab__item--active {
+  background: #111827;
+  color: #fff !important;
+  font-weight: 600;
+}
+
+/* ── New Issue form (tz-ni-*) ───────────────────────────────────────── */
+
+.tz-ni-page {
+  width: 100%;
+  padding: 28px 24px 56px;
+  box-sizing: border-box;
+  background: #f5f7fb;
+}
+
+/* Back button */
+.tz-ni-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 10px;
+  padding: 4px 10px;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  color: #374151;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.tz-ni-back-btn:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+/* Breadcrumb */
+.tz-ni-title {
+  font-size: 1.625rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 4px;
+  padding: 0;
+  border: none;
+}
+.tz-ni-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  color: #9ca3af;
+  margin-bottom: 20px;
+}
+.tz-ni-breadcrumb__link { color: #6b7280; text-decoration: none; }
+.tz-ni-breadcrumb__link:hover { color: #16a34a; }
+.tz-ni-breadcrumb__current { color: #374151; font-weight: 500; }
+
+/* Page-level two-column grid: form | upload */
+.tz-ni-layout {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 20px;
+  align-items: start;
+}
+
+/* Main form column */
+.tz-ni-main { display: flex; flex-direction: column; gap: 16px; }
+
+/* ── ONE big card matching reference ── */
+.tz-ni-card {
+  background: #fff;
+  border: 1.5px solid #3b82f6;
+  border-radius: 12px;
+  padding: 20px 24px 24px;
+}
+
+/* Card top row: section title + Private checkbox */
+.tz-ni-card__toprow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+/* Section group titles (inside the card, no border) */
+.tz-ni-group-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Divider between groups inside the card */
+.tz-ni-group-divider {
+  margin: 20px 0 14px;
+}
+
+/* Private checkbox label */
+.tz-ni-private-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  color: #374151;
+  cursor: pointer;
+}
+
+/* Two-column grid for project+tracker / task fields */
+.tz-ni-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 20px;
+}
+
+/* Left/right explicit columns in Task Details */
+.tz-ni-col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Individual field */
+.tz-ni-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tz-ni-field--mt { margin-top: 14px; }
+.tz-ni-field--full { grid-column: 1 / -1; }
+
+/* Label row (label + help icon side by side) */
+.tz-ni-label-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Labels */
+.tz-ni-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #374151;
+  line-height: 1.3;
+}
+
+/* Inputs + selects */
+.tz-ni-input,
+.tz-ni-select {
+  width: 100%;
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #111827;
+  background: #fff;
+  box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  appearance: auto;
+}
+.tz-ni-input:focus,
+.tz-ni-select:focus {
+  outline: none;
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22,163,74,0.1);
+}
+
+/* Date+calendar row */
+.tz-ni-field-row { display: flex; align-items: center; gap: 6px; }
+.tz-ni-field-row .tz-ni-input { flex: 1; }
+
+/* Textarea (description) */
+.tz-ni-textarea {
+  width: 100% !important;
+  min-height: 120px;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #111827;
+  resize: vertical;
+  box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.tz-ni-textarea:focus {
+  outline: none;
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22,163,74,0.1);
+}
+
+/* Assign-to-me link */
+.assign-to-me-link,
+.tz-ni-assign-me {
+  font-size: 0.75rem;
+  color: #16a34a;
+  text-decoration: none;
+  margin-top: 2px;
+}
+
+/* Help icon */
+.tz-ni-help-icon { flex-shrink: 0; opacity: 0.6; }
+
+/* Custom fields */
+.tz-ni-custom-fields { margin-top: 16px; }
+.tz-ni-custom-fields .splitcontent { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+.tz-ni-custom-fields .splitcontentleft,
+.tz-ni-custom-fields .splitcontentright { width: 100% !important; float: none; }
+.tz-ni-custom-fields p { margin: 0 0 10px; }
+.tz-ni-custom-fields label { font-size: 0.8125rem; font-weight: 500; color: #374151; display: block; margin-bottom: 3px; }
+.tz-ni-custom-fields input[type="text"],
+.tz-ni-custom-fields input[type="date"],
+.tz-ni-custom-fields select,
+.tz-ni-custom-fields textarea {
+  width: 100%; border: 1px solid #d1d5db; border-radius: 8px;
+  padding: 6px 10px; font-size: 0.875rem; color: #111827; box-sizing: border-box;
+}
+
+/* Watchers block */
+.tz-ni-watchers { margin-top: 4px; }
+.tz-ni-watchers__title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 10px;
+  padding: 0;
+  border: none;
+}
+
+/* Copy options */
+.tz-ni-copy-opt { font-size: 0.875rem; color: #374151; }
+
+/* ── Action buttons — bottom-right ── */
+.tz-ni-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.tz-ni-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 22px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  border: 1.5px solid transparent;
+  white-space: nowrap;
+}
+/* Cancel — white bg, green border */
+.tz-ni-btn--cancel {
+  background: #fff;
+  border-color: #16a34a;
+  color: #16a34a;
+}
+.tz-ni-btn--cancel:hover {
+  background: #f0fdf4;
+  text-decoration: none;
+  color: #15803d;
+}
+/* Save — solid green */
+.tz-ni-btn--save {
+  background: #16a34a;
+  border-color: #16a34a;
+  color: #fff;
+}
+.tz-ni-btn--save:hover { background: #15803d; }
+/* Ghost — for secondary actions */
+.tz-ni-btn--ghost {
+  background: transparent;
+  border-color: #d1d5db;
+  color: #6b7280;
+}
+.tz-ni-btn--ghost:hover { background: #f9fafb; color: #374151; }
+
+/* ── Upload card (right sidebar) ── */
+.tz-ni-sidebar { position: sticky; top: 100px; }
+.tz-ni-upload-card {
+  background: #f0fdf4;
+  border: 1.5px dashed #16a34a;
+  border-radius: 12px;
+  padding: 20px 16px;
+  text-align: center;
+}
+.tz-ni-upload-size {
+  font-size: 0.8125rem;
+  color: #374151;
+  margin: 0 0 12px;
+}
+.tz-ni-upload-attachments { width: 100%; text-align: left; }
+
+/* Scoping: transparent #content when new issue page is shown */
+#content:has(.tz-ni-page) {
+  background: #f5f7fb;
+  padding: 0;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .tz-ni-layout { grid-template-columns: 1fr; }
+  .tz-ni-sidebar { position: static; }
+  .tz-ni-grid-2 { grid-template-columns: 1fr; }
+  .tz-ni-custom-fields .splitcontent { grid-template-columns: 1fr; }
+}
+   TZ Activity — Card board layout
+   Scoped to .tz-act-* — zero impact on any other Redmine page.
+============================================================================= */
+
+/* ── Header row (title left, filter button right) ── */
+.tz-act-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ── Date-range subtitle spacing ── */
+.tz-act-daterange {
+  margin-bottom: 16px;
+}
+
+/* ── Board wrapper (sits outside .tz-dash-content for full-width grid) ── */
+.tz-act-board {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Feed ── */
+.tz-act-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+/* ── Day section ── */
+.tz-act-day__header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.tz-act-day__label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
+}
+
+.tz-act-day__line {
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+/* ── Card grid ── */
+.tz-act-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 1024px) { .tz-act-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px)  { .tz-act-grid { grid-template-columns: 1fr; } }
+
+/* ── Card ── */
+.tz-act-card {
+  background: #ffffff;
+  border: 1px dashed #3b82f6;
+  border-radius: 12px;
+  padding: 16px;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.tz-act-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59,130,246,0.12);
+  border-color: #2563eb;
+}
+.tz-act-card--mine  { border-color: #16a34a; }
+.tz-act-card--mine:hover { border-color: #15803d; }
+.tz-act-card--grouped { opacity: 0.9; }
+
+/* ── Top row: time + badge ── */
+.tz-act-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tz-act-card__time {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ── Event-type badge ── */
+.tz-act-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+/* Per-type colour overrides */
+.tz-act-badge--issue        { background: #e0e7ff; color: #3730a3; }
+.tz-act-badge--issue_edit   { background: #ede9fe; color: #5b21b6; }
+.tz-act-badge--news         { background: #fef3c7; color: #92400e; }
+.tz-act-badge--document     { background: #dbeafe; color: #1e40af; }
+.tz-act-badge--attachment   { background: #f3f4f6; color: #374151; }
+.tz-act-badge--changeset    { background: #d1fae5; color: #065f46; }
+.tz-act-badge--message      { background: #fce7f3; color: #9d174d; }
+.tz-act-badge--wiki_page    { background: #ccfbf1; color: #0f766e; }
+.tz-act-badge--time_entry   { background: #ffedd5; color: #9a3412; }
+
+/* ── Project name ── */
+.tz-act-card__project {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Title link ── */
+.tz-act-card__title { flex: 1; }
+
+.tz-act-card__link {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #111827;
+  text-decoration: none;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tz-act-card__link:hover { color: #2563eb; text-decoration: none; }
+
+/* ── Description ── */
+.tz-act-card__desc {
+  font-size: 0.75rem;
+  color: #6b7280;
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Author row (pinned to card bottom) ── */
+.tz-act-card__author {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid #f3f4f6;
+  font-size: 0.6875rem;
+  color: #9ca3af;
+}
+.tz-act-card__author a { color: #374151; font-weight: 500; text-decoration: none; font-size: 0.75rem; }
+.tz-act-card__author a:hover { color: #111827; text-decoration: underline; }
+
+.tz-act-card__author-label {
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+/* ── Avatar initials circle ── */
+.tz-act-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #e0e7ff;
+  color: #3730a3;
+  font-size: 0.625rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+/* ── Pagination strip ── */
+.tz-act-pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
+}
+
+/* ── Inline filter grid ── */
+.tz-act-filter-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-end;
+}
+
+.tz-act-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tz-act-filter-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tz-act-filter-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+}
+
+.tz-act-filter-check {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.8125rem;
+  color: #374151;
+  cursor: pointer;
+}
+
+.tz-act-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  color: #374151;
+}
+
+.tz-act-filter-select {
+  font-size: 0.8125rem;
+  padding: 5px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  color: #374151;
+}
+
+.tz-act-filter-group--apply { justify-content: flex-end; }
